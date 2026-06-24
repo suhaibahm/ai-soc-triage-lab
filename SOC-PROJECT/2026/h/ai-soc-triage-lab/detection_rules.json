@@ -1,0 +1,46 @@
+[
+  {
+    "id": "rule-001",
+    "name": "Encoded PowerShell Launched From Office",
+    "description": "Detects encoded PowerShell commands, especially suspicious when launched from Office applications.",
+    "severity": "high",
+    "event_type": "process_creation",
+    "keywords": ["powershell", "encodedcommand"],
+    "mitre_technique": "T1059.001 - PowerShell",
+    "mitre_tactic": "Execution",
+    "analyst_guidance": "Check parent process, command content, user context, and whether the document source is trusted."
+  },
+  {
+    "id": "rule-002",
+    "name": "SSH Brute Force Followed By Success",
+    "description": "Detects repeated failed SSH authentication followed by successful access.",
+    "severity": "critical",
+    "event_type": "authentication",
+    "keywords": ["failed ssh", "successful login"],
+    "mitre_technique": "T1110 - Brute Force",
+    "mitre_tactic": "Credential Access",
+    "analyst_guidance": "Validate the source IP, reset exposed credentials, review login history, and check for post-login commands."
+  },
+  {
+    "id": "rule-003",
+    "name": "Suspicious DNS Query",
+    "description": "Detects DNS lookups to suspicious or newly registered domains in the lab feed.",
+    "severity": "medium",
+    "event_type": "dns_query",
+    "keywords": ["suspicious", "domain"],
+    "mitre_technique": "T1071.004 - DNS",
+    "mitre_tactic": "Command and Control",
+    "analyst_guidance": "Review browser history, proxy logs, process lineage, and other hosts querying the same domain."
+  },
+  {
+    "id": "rule-004",
+    "name": "Service Account Added To Domain Admins",
+    "description": "Detects high-impact privilege escalation through privileged group membership changes.",
+    "severity": "critical",
+    "event_type": "privilege_use",
+    "keywords": ["domain admins", "/add"],
+    "mitre_technique": "T1098 - Account Manipulation",
+    "mitre_tactic": "Persistence",
+    "analyst_guidance": "Confirm change approval, review the actor host, remove unauthorized access, and hunt for related account changes."
+  }
+]

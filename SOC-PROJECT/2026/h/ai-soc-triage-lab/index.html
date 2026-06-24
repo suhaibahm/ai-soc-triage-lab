@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SOC-in-a-box</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #111318;
+        --panel: #191d24;
+        --panel-2: #202632;
+        --text: #f4f7fb;
+        --muted: #a7b0be;
+        --line: #303849;
+        --accent: #37c6a4;
+        --warn: #f2b84b;
+        --danger: #ef5d5d;
+        --critical: #ff3f81;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--text);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      button,
+      select {
+        font: inherit;
+      }
+
+      .shell {
+        display: grid;
+        grid-template-columns: 260px minmax(0, 1fr);
+        min-height: 100vh;
+      }
+
+      aside {
+        border-right: 1px solid var(--line);
+        background: #151922;
+        padding: 22px;
+      }
+
+      main {
+        padding: 22px;
+      }
+
+      .brand {
+        font-size: 22px;
+        font-weight: 760;
+        margin-bottom: 6px;
+      }
+
+      .subtle {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      .metrics {
+        display: grid;
+        gap: 12px;
+        margin-top: 24px;
+      }
+
+      .metric {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px;
+        background: var(--panel);
+      }
+
+      .metric strong {
+        display: block;
+        font-size: 26px;
+      }
+
+      .toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 24px;
+      }
+
+      select {
+        min-width: 170px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: var(--text);
+        background: var(--panel);
+        padding: 10px 12px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: minmax(320px, 460px) minmax(0, 1fr);
+        gap: 18px;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        overflow: hidden;
+      }
+
+      .panel-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line);
+        background: var(--panel-2);
+      }
+
+      .alert-list {
+        display: grid;
+      }
+
+      .alert-row {
+        width: 100%;
+        display: grid;
+        gap: 7px;
+        border: 0;
+        border-bottom: 1px solid var(--line);
+        color: var(--text);
+        background: transparent;
+        padding: 14px 16px;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .alert-row:hover,
+      .alert-row.active {
+        background: #242b38;
+      }
+
+      .alert-title {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .pill {
+        border-radius: 999px;
+        padding: 4px 8px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      .high {
+        background: rgba(242, 184, 75, 0.16);
+        color: var(--warn);
+      }
+
+      .medium {
+        background: rgba(55, 198, 164, 0.15);
+        color: var(--accent);
+      }
+
+      .critical {
+        background: rgba(255, 63, 129, 0.16);
+        color: var(--critical);
+      }
+
+      .details {
+        display: grid;
+        gap: 16px;
+        padding: 16px;
+      }
+
+      .kv {
+        display: grid;
+        grid-template-columns: 140px 1fr;
+        gap: 8px 14px;
+        font-size: 14px;
+      }
+
+      .kv span:nth-child(odd) {
+        color: var(--muted);
+      }
+
+      .mono {
+        overflow-wrap: anywhere;
+        font-family: "Cascadia Code", Consolas, monospace;
+        font-size: 13px;
+        color: #d7e0ec;
+      }
+
+      .triage {
+        white-space: pre-wrap;
+        line-height: 1.5;
+        color: #e7edf5;
+      }
+
+      .action {
+        border: 0;
+        border-radius: 8px;
+        background: var(--accent);
+        color: #07120f;
+        font-weight: 760;
+        padding: 10px 13px;
+        cursor: pointer;
+      }
+
+      .action:disabled {
+        cursor: wait;
+        opacity: 0.7;
+      }
+
+      @media (max-width: 900px) {
+        .shell,
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        aside {
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <aside>
+        <div class="brand">SOC-in-a-box</div>
+        <div class="subtle">AI-assisted security alert triage lab using FastAPI detections and Groq LLM analysis.</div>
+        <div class="metrics">
+          <div class="metric"><strong id="alertCount">0</strong><span class="subtle">alerts</span></div>
+          <div class="metric"><strong id="criticalCount">0</strong><span class="subtle">critical</span></div>
+          <div class="metric"><strong id="ruleCount">0</strong><span class="subtle">rules</span></div>
+        </div>
+      </aside>
+
+      <main>
+        <div class="toolbar">
+          <div>
+            <h1>Alert Queue</h1>
+            <div class="subtle">Select an alert, review the evidence, then generate a Groq-powered triage note.</div>
+          </div>
+          <select id="severityFilter" aria-label="Severity filter">
+            <option value="all">All severities</option>
+            <option value="critical">Critical</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+          </select>
+        </div>
+
+        <div class="grid">
+          <section class="panel">
+            <div class="panel-header">
+              <strong>Detections</strong>
+              <span class="subtle" id="visibleCount">0 visible</span>
+            </div>
+            <div class="alert-list" id="alertList"></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <strong id="detailTitle">Alert details</strong>
+              <button class="action" id="triageButton">Triage with LLM</button>
+            </div>
+            <div class="details">
+              <div class="kv" id="details"></div>
+              <div>
+                <strong>LLM triage</strong>
+                <div class="triage subtle" id="triageOutput">Choose an alert and click the triage button.</div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      let alerts = [];
+      let rules = [];
+      let selectedAlert = null;
+
+      const alertList = document.querySelector("#alertList");
+      const details = document.querySelector("#details");
+      const triageOutput = document.querySelector("#triageOutput");
+      const triageButton = document.querySelector("#triageButton");
+      const severityFilter = document.querySelector("#severityFilter");
+
+      function severityClass(severity) {
+        return ["critical", "high", "medium"].includes(severity) ? severity : "medium";
+      }
+
+      function filteredAlerts() {
+        const severity = severityFilter.value;
+        return severity === "all" ? alerts : alerts.filter((alert) => alert.severity === severity);
+      }
+
+      function renderMetrics() {
+        document.querySelector("#alertCount").textContent = alerts.length;
+        document.querySelector("#criticalCount").textContent = alerts.filter((alert) => alert.severity === "critical").length;
+        document.querySelector("#ruleCount").textContent = rules.length;
+      }
+
+      function renderAlerts() {
+        const visible = filteredAlerts();
+        document.querySelector("#visibleCount").textContent = `${visible.length} visible`;
+        alertList.innerHTML = visible
+          .map(
+            (alert) => `
+              <button class="alert-row ${selectedAlert?.id === alert.id ? "active" : ""}" data-alert-id="${alert.id}">
+                <div class="alert-title">
+                  <strong>${alert.rule_name}</strong>
+                  <span class="pill ${severityClass(alert.severity)}">${alert.severity}</span>
+                </div>
+                <span class="subtle">${alert.event.host} | ${alert.mitre_technique}</span>
+              </button>
+            `
+          )
+          .join("");
+
+        document.querySelectorAll("[data-alert-id]").forEach((button) => {
+          button.addEventListener("click", () => selectAlert(button.dataset.alertId));
+        });
+      }
+
+      function renderDetails() {
+        if (!selectedAlert) return;
+        document.querySelector("#detailTitle").textContent = selectedAlert.rule_name;
+        details.innerHTML = `
+          <span>Severity</span><span><span class="pill ${severityClass(selectedAlert.severity)}">${selectedAlert.severity}</span></span>
+          <span>Host</span><span>${selectedAlert.event.host}</span>
+          <span>User</span><span>${selectedAlert.event.username || "unknown"}</span>
+          <span>Source</span><span>${selectedAlert.event.source}</span>
+          <span>MITRE</span><span>${selectedAlert.mitre_tactic} / ${selectedAlert.mitre_technique}</span>
+          <span>Message</span><span>${selectedAlert.event.message}</span>
+          <span>Command</span><span class="mono">${selectedAlert.event.command_line || "n/a"}</span>
+          <span>Analyst guidance</span><span>${selectedAlert.analyst_guidance}</span>
+        `;
+      }
+
+      function selectAlert(alertId) {
+        selectedAlert = alerts.find((alert) => alert.id === alertId);
+        triageOutput.textContent = "Ready for LLM triage.";
+        renderAlerts();
+        renderDetails();
+      }
+
+      async function triageSelectedAlert() {
+        if (!selectedAlert) return;
+        triageButton.disabled = true;
+        triageOutput.textContent = "Generating triage note...";
+        try {
+          const response = await fetch("/api/triage", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ alert_id: selectedAlert.id }),
+          });
+          const result = await response.json();
+          if (!response.ok) throw new Error(result.detail || "Triage request failed");
+          triageOutput.textContent = `[${result.provider} | ${result.model}]\n\n${result.summary}`;
+        } catch (error) {
+          triageOutput.textContent = `Triage failed: ${error.message}`;
+        } finally {
+          triageButton.disabled = false;
+        }
+      }
+
+      async function init() {
+        const [alertResponse, ruleResponse] = await Promise.all([fetch("/api/alerts"), fetch("/api/rules")]);
+        alerts = await alertResponse.json();
+        rules = await ruleResponse.json();
+        selectedAlert = alerts[0];
+        renderMetrics();
+        renderAlerts();
+        renderDetails();
+      }
+
+      severityFilter.addEventListener("change", renderAlerts);
+      triageButton.addEventListener("click", triageSelectedAlert);
+      init();
+    </script>
+  </body>
+</html>

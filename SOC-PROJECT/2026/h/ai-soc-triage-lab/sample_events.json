@@ -1,0 +1,69 @@
+[
+  {
+    "id": "evt-001",
+    "timestamp": "2026-06-24T00:11:08Z",
+    "source": "windows-sysmon",
+    "host": "WIN-FINANCE-02",
+    "username": "finance.analyst",
+    "event_type": "process_creation",
+    "message": "PowerShell spawned with encoded command from Microsoft Word.",
+    "src_ip": null,
+    "dest_ip": null,
+    "process": "powershell.exe",
+    "command_line": "powershell.exe -NoProfile -EncodedCommand SQBFAFgAIAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQAKQA=",
+    "raw": {
+      "parent_process": "WINWORD.EXE",
+      "event_id": 1
+    }
+  },
+  {
+    "id": "evt-002",
+    "timestamp": "2026-06-24T00:16:41Z",
+    "source": "linux-auth",
+    "host": "ubuntu-web-01",
+    "username": "root",
+    "event_type": "authentication",
+    "message": "Multiple failed SSH logins for root followed by a successful login.",
+    "src_ip": "203.0.113.54",
+    "dest_ip": "10.10.5.21",
+    "process": "sshd",
+    "command_line": null,
+    "raw": {
+      "failed_attempts": 12,
+      "country": "external-test-net"
+    }
+  },
+  {
+    "id": "evt-003",
+    "timestamp": "2026-06-24T00:22:10Z",
+    "source": "network-dns",
+    "host": "WIN-HR-04",
+    "username": "hr.user",
+    "event_type": "dns_query",
+    "message": "Host queried suspicious newly registered domain used by malware training scenario.",
+    "src_ip": "10.10.8.44",
+    "dest_ip": "198.51.100.17",
+    "process": "chrome.exe",
+    "command_line": null,
+    "raw": {
+      "query": "cdn-update-login-example.test",
+      "rrtype": "A"
+    }
+  },
+  {
+    "id": "evt-004",
+    "timestamp": "2026-06-24T00:35:19Z",
+    "source": "windows-security",
+    "host": "DC-01",
+    "username": "svc_backup",
+    "event_type": "privilege_use",
+    "message": "Service account added to Domain Admins outside change window.",
+    "src_ip": "10.10.2.15",
+    "dest_ip": "10.10.1.10",
+    "process": "net.exe",
+    "command_line": "net group \"Domain Admins\" svc_backup /add /domain",
+    "raw": {
+      "event_id": 4728
+    }
+  }
+]
